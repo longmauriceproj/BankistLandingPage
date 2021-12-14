@@ -40,7 +40,7 @@ document.addEventListener('keydown', function (e) {
 
 //Button scrolling
 btnScrollTo.addEventListener('click', function (e) {
-  const s1coords = section1.getBoundingClientRect();
+  //const s1coords = section1.getBoundingClientRect();
 
   //Scrolling
   //hard scroll
@@ -128,3 +128,41 @@ const handleHover = function (e) {
 //Passing an additional "argument" into handler function (handler functions can only have one event argument)
 nav.addEventListener('mouseover', handleHover.bind(0.5));
 nav.addEventListener('mouseout', handleHover.bind(1));
+
+//Sticky navigation
+//option 1. using scroll event (not efficient)
+// const initialCoords = section1.getBoundingClientRect();
+
+// window.addEventListener('scroll', function () {
+//   if (window.scrollY > initialCoords.top) nav.classList.add('sticky');
+//   else nav.classList.remove('sticky');
+// });
+//option 2. using intersection observer API
+// const obsCallback = function (entries, observer) {
+//   //whenever observed element intersects with root element at defined threshold
+//   entries.forEach(entry => {
+//     console.log(entry);
+//   });
+// };
+// const obsOptions = {
+//   root: null, //root is element that target is intersecting. null value mean entire viewport
+//   threshold: [0, 0.2], //the percentage of intersection that the observer callback will be called. This could be an array of threshold entries
+// };
+// const observer = new IntersectionObserver(obsCallback, obsOptions);
+// observer.observe(section1);
+
+const header = document.querySelector('.header');
+const navHeight = nav.getBoundingClientRect().height;
+
+const stickyNav = function (entries) {
+  const [entry] = entries;
+  if (!entry.isIntersecting) nav.classList.add('sticky');
+  else nav.classList.remove('sticky');
+};
+
+const headerObserver = new IntersectionObserver(stickyNav, {
+  root: null,
+  threshold: 0,
+  rootMargin: `-${navHeight}px`, //nav bar will appear right before entering section 1
+});
+headerObserver.observe(header);
